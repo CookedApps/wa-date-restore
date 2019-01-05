@@ -11,5 +11,6 @@ targetCompatibility = 1.8
 
 dependencies {
     implementation 'com.drewnoakes:metadata-extractor:2.11.0'
+    implementation 'commons-cli:commons-cli:1.4'
 }
 
