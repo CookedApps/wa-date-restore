@@ -11,7 +11,7 @@ class CliOptions {
 
     static final String HELP_SYNTAX = "warestore";
     static final String HELP_HEADER = "Restore the original date of WhatsApp images and videos:\n\n";
-    static final String HELP_FOOTER = "\nPlease report issues at https://github.com/CookedApps/wa-date-restore";
+    static final String HELP_FOOTER = "\nPlease report issues at https://github.com/CookedApps/wa-date-restore\n\n";
 
     private static Options options = initOptions();
 
@@ -21,7 +21,7 @@ class CliOptions {
         o.addOption(help());
         o.addOption(directory());
         o.addOption(lastModified());
-        o.addOption(exifDateTimeOriginal());
+//        o.addOption(exifDateTimeOriginal());
 
         return o;
     }

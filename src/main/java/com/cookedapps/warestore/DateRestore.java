@@ -1,10 +1,5 @@
 package com.cookedapps.warestore;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
-
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -111,15 +106,12 @@ class DateRestore {
         }
     }
 
-    // FIXME: Does not work yet
     // See https://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif.html
     private void overwriteExifDateTimeOriginal(Path path, Date date) {
         try {
             System.out.print(" [EXIF DateTimeOriginal ->" + beautifyDate(date) + "]");
-            Metadata metadata = ImageMetadataReader.readMetadata(path.toFile());
-            ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-            directory.setDate(36867, date);
-        } catch (ImageProcessingException | IOException e) {
+            // TODO: Implement
+        } catch (Exception e) {
             System.err.println("Could not overwrite EXIF DateTimeOriginal of " + path.getFileName());
         }
     }
