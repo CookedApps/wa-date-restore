@@ -35,14 +35,16 @@ public class Main {
     }
 
     private void checkOptions(CommandLine cl) {
-        if(hasOption(cl, CliOptions.help())) {
+        if(cl.getOptions().length == 0 || hasOption(cl, CliOptions.help())) {
             printHelp();
-        }
-        if(hasOption(cl, CliOptions.directory())) {
+        } else if(hasOption(cl, CliOptions.directory())) {
             String directoryPath = cl.getOptionValue(CliOptions.directory().getOpt());
 
             DateRestore dr = new DateRestore();
-            dr.restoreDates(directoryPath, hasOption(cl, CliOptions.lastModified()), hasOption(cl, CliOptions.exifDateTimeOriginal()));
+            dr.restoreDates(directoryPath, hasOption(cl, CliOptions.lastModified()), hasOption(cl, CliOptions.exifDate()));
+        } else {
+            System.err.println("You need to specify the input directory!");
+            printHelp();
         }
     }
 

@@ -5,11 +5,12 @@ repositories {
 }
 
 group = 'com.cookedapps'
-version = '0.1.1-SNAPSHOT'
+version = '1.0.0'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+    compile files('libs/commons-imaging-1.0-20180908.110935-119.jar')
     implementation 'commons-cli:commons-cli:1.4'
 }
 

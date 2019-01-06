@@ -20,8 +20,8 @@ class CliOptions {
 
         o.addOption(help());
         o.addOption(directory());
+        o.addOption(exifDate());
         o.addOption(lastModified());
-//        o.addOption(exifDateTimeOriginal());
 
         return o;
     }
@@ -56,11 +56,11 @@ class CliOptions {
                 .build();
     }
 
-    static Option exifDateTimeOriginal() {
+    static Option exifDate() {
         return Option
                 .builder("e")
-                .desc("Overwrite the EXIF \"DateTimeOriginal\" tag with the extracted date")
-                .longOpt("exifDateTimeOriginal")
+                .desc("Overwrite the EXIF \"DateTimeOriginal\" and \"DateTimeDigitized\"tag with the extracted date")
+                .longOpt("exifDate")
                 .build();
     }
 
