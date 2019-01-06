@@ -34,6 +34,7 @@ class DateRestore {
     private static final String ERROR_PATH_PREFIX = "Invalid path provided: ";
     private static final SimpleDateFormat DATE_FORMAT_PRINT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     private static final SimpleDateFormat DATE_FORMAT_EXIF = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+    public static final String OUTPUT_DIR = "wa_date_restored";
 
     private String directoryPath;
 
@@ -150,7 +151,7 @@ class DateRestore {
 
     private String getOutputDirPath() {
         if(directoryPath == null || directoryPath.isEmpty()) return null;
-        return directoryPath + File.separatorChar + "output" + File.separatorChar;
+        return directoryPath + File.separatorChar + OUTPUT_DIR + File.separatorChar;
     }
 
     // See https://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif.html
