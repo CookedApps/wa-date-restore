@@ -7,7 +7,7 @@ Since the filenames follow a specific pattern `IMG-<date>-WA<number>.<extension>
 extract the creation date (more precisely the date when the image was received) and write it back into the file.
 
 ## Usage
-* Download the Zip file from the releases page and extract it
+* Download the latest release from the [releases page](https://github.com/CookedApps/wa-date-restore/releases) and extract the `wa-date-restore.zip` file
 * Open a terminal and navigate into `/bin`
 * Start the program by typing `./wa-date-restore` (on Linux or OSX) or `wa-date-restore.dat` (on Windows)
     * Define the input folder with `-d <path>`
