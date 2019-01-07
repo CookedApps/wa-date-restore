@@ -12,10 +12,7 @@ import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 
 import java.io.*;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,10 +28,13 @@ import java.util.regex.Pattern;
  */
 class DateRestore {
 
+    static final String OUTPUT_DIR = "wa_date_restored";
+
     private static final String ERROR_PATH_PREFIX = "Invalid path provided: ";
+    private static final String DATE_PATTERN_FILENAME = "yyyyMMdd";
     private static final SimpleDateFormat DATE_FORMAT_PRINT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     private static final SimpleDateFormat DATE_FORMAT_EXIF = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
-    public static final String OUTPUT_DIR = "wa_date_restored";
+    private static final SimpleDateFormat DATE_FORMAT_FILENAME = new SimpleDateFormat(DATE_PATTERN_FILENAME);
 
     private String directoryPath;
 
@@ -46,7 +46,7 @@ class DateRestore {
             if(Files.isDirectory(directory)) {
                 getDirectoryStream(directory).ifPresent(paths -> paths.forEach(path -> {
                     if(!Files.isDirectory(path)) {
-                        process(path, lastModifiedDate, exifDateTimeOriginal);
+                        extractAndWriteDate(path, lastModifiedDate, exifDateTimeOriginal);
                     }
                 }));
             } else {
@@ -70,24 +70,12 @@ class DateRestore {
         System.err.println(ERROR_PATH_PREFIX + msg);
     }
 
-    private void process(Path source, boolean lastModifiedDate, boolean exifDate) {
+    private void extractAndWriteDate(Path source, boolean lastModifiedDate, boolean exifDate) {
         String fileName = source.getFileName().toString();
 
-        getDateStringFromFileName(fileName).ifPresent(dateString -> getDateFromString(dateString).ifPresent(date -> {
-            System.out.print("Processing " + source.getFileName() + ":");
-            if(!lastModifiedDate && !exifDate) {
-                System.out.print(" Nothing to process");
-            } else {
-                Path dest = createDestinationFile(source);
-                if(exifDate) {
-                    overwriteExifDate(source, dest, date);
-                }
-                if(lastModifiedDate) {
-                    overwriteLastModifiedDate(dest, date);
-                }
-            }
-            System.out.println();
-        }));
+        getDateStringFromFileName(fileName)
+                .ifPresent(dateString -> getDate(source, dateString)
+                        .ifPresent(date -> processFile(source, lastModifiedDate, exifDate, date)));
     }
 
     private Optional<String> getDateStringFromFileName(String fileName) {
@@ -106,15 +94,43 @@ class DateRestore {
         System.err.print(" Error: " + message + "\n");
     }
 
-    private Optional<Date> getDateFromString(String dateString) {
-        String datePattern = "yyyyMMdd";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(datePattern);
+    private Optional<Date> getDate(Path source, String dateString) {
+        Optional<Date> lastModDate = getDateFromLastMod(source, dateString);
+        if(lastModDate.isPresent()) {
+            return lastModDate;
+        } else {
+            return getDateFromString(dateString);
+        }
+    }
+
+    private Optional<Date> getDateFromLastMod(Path source, String dateString) {
+        Optional<FileTime> lastModTime = getLastModTime(source);
+        if(lastModTime.isPresent()) {
+            Date lastModDate = Date.from(lastModTime.get().toInstant());
+            String lastModDateString = DATE_FORMAT_FILENAME.format(lastModDate);
+
+            if(lastModDateString.equals(dateString)) {
+                return Optional.of(lastModDate);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<FileTime> getLastModTime(Path source) {
         try {
-            Date date = simpleDateFormat.parse(dateString);
+            return Optional.of(Files.getLastModifiedTime(source, LinkOption.NOFOLLOW_LINKS));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Date> getDateFromString(String dateString) {
+        try {
+            Date date = DATE_FORMAT_FILENAME.parse(dateString);
             date = add12HoursToDate(date);
             return Optional.of(date);
         } catch (ParseException e) {
-            printInlineError("Could not parse date " + dateString + " - Not matching " + datePattern);
+            printInlineError("Could not parse date " + dateString + " - Not matching " + DATE_PATTERN_FILENAME);
             e.printStackTrace();
             return Optional.empty();
         }
@@ -125,6 +141,22 @@ class DateRestore {
         cal.setTime(date);
         cal.add(Calendar.HOUR_OF_DAY, 12);
         return cal.getTime();
+    }
+
+    private void processFile(Path source, boolean lastModifiedDate, boolean exifDate, Date date) {
+        System.out.print("Processing " + source.getFileName() + ":");
+        if(!lastModifiedDate && !exifDate) {
+            System.out.print(" Nothing to process");
+        } else {
+            Path dest = createDestinationFile(source);
+            if(exifDate) {
+                overwriteExifDate(source, dest, date);
+            }
+            if(lastModifiedDate) {
+                overwriteLastModifiedDate(dest, date);
+            }
+        }
+        System.out.println();
     }
 
     private Path createDestinationFile(Path source) {

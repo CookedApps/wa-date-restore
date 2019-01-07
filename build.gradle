@@ -7,7 +7,7 @@ repositories {
 
 group = 'com.cookedapps'
 mainClassName = 'com.cookedapps.warestore.Main'
-version = '1.0.1'
+version = '1.2.0'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
