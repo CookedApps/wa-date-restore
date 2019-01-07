@@ -1,7 +1,7 @@
-# WhatsApp image date restore
+# WhatsApp Image Date Restore
 A simple command line tool for restoring the EXIF creation date of WhatApp images.
 
-I ran into an issue where the original dates of my WhatsApp images where lost after restoring them from Google Drive Backup. 
+WhatsApp removes all EXIF information of images you received. This includes information of when the images was taken. 
 This program lets you restore these dates by **extracting the original date from the filename**. 
 Since the filenames follow a specific pattern `IMG-<date>-WA<number>.<extension>` (e.g. IMG-20160315-WA0020.jpg), we can 
 extract the creation date (more precisely the date when the image was received) and write it back into the file.
@@ -9,9 +9,8 @@ extract the creation date (more precisely the date when the image was received) 
 ## Usage
 * Download the latest release from the [releases page](https://github.com/CookedApps/wa-date-restore/releases) and extract the `wa-date-restore.zip` file
 * Open a terminal and navigate into `/bin`
-* Start the program by typing `./wa-date-restore` (on Linux or OSX) or `wa-date-restore.dat` (on Windows)
-    * Define the input folder with `-d <path>`
-    * Activate EXIF date overwrite with `-e`
+* Start the program by typing `./wa-date-restore` (on Linux or OSX) or simply `wa-date-restore` (on Windows)
+    * Remeber to define the input folder with `-d <path>` and activate "EXIF date overwrite" with `-e`
     
 All files contained in the input directory will be processed and then saved into the folder `/wa_date_restored` inside 
 the input directory.
